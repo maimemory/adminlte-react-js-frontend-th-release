@@ -1,6 +1,19 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { useNavigate } from 'react-router-dom';
+import { Context } from '../../App';
 
 function Header() {
+
+  const navigate = useNavigate();
+
+  const {isLogin, setIsLogin } = useContext(Context);
+
+  const signOut = () => {
+    setIsLogin(false);
+    localStorage.removeItem('alreadyLogin');
+    navigate("/");
+  }
+
   return (
     <div>
       {/* Navbar */}
@@ -200,6 +213,15 @@ function Header() {
             >
               <i className="fas fa-th-large" />
             </a>
+          </li>
+          <li className="nav-item">
+            <button 
+              type="button" 
+              className='btn btn-block btn-outline-primary'
+              onClick={() => signOut()}
+            >
+              Sign Out
+            </button>
           </li>
         </ul>
       </nav>

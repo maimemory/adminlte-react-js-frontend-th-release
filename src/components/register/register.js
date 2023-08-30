@@ -1,14 +1,56 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 function Register() {
-
   const [user, setUser] = useState({
     username: "",
-    password: ""
-  })
+    password: "",
+  });
 
   const navigate = useNavigate();
+
+  const createUser = async (e) => {
+    e.preventDefault();
+
+    if (user.username !== "" && user.password !== "") {
+      await axios
+        .post("http://localhost:1000/create", user)
+        .then((result) => {
+          console.log(result.data);
+          if(result.data.message === "User was already registered"){
+            Swal.fire({
+              icon: "error",
+              title: "Error!",
+              text: "User was already registered!",
+            });
+          }
+          else{
+            Swal.fire(
+              "Register Successfully!",
+              "Redirect to Sign In!",
+              "success"
+            );
+            navigate("/login");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "Something went wrong!",
+          });
+        });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Username or password is empty!",
+      });
+    }
+  };
 
   return (
     <div className="login-page">
@@ -22,17 +64,18 @@ function Register() {
           </div>
           <div className="card-body">
             <p className="login-box-msg">Sign in to start your session</p>
-            <form>
+            <form onSubmit={e => createUser(e)}>
               <div className="input-group mb-3">
                 <input
-                  type="email"
                   className="form-control"
-                  placeholder="Email"
-                  onChange={e => setUser({...user, username: e.target.value})}
+                  placeholder="Username"
+                  onChange={e =>
+                    setUser({ ...user, username: e.target.value })
+                  }
                 />
                 <div className="input-group-append">
                   <div className="input-group-text">
-                    <span className="fas fa-envelope" />
+                    <span className="fas fa-user" />
                   </div>
                 </div>
               </div>
@@ -41,7 +84,9 @@ function Register() {
                   type="password"
                   className="form-control"
                   placeholder="Password"
-                  onChange={e => setUser({...user, password: e.target.value})}
+                  onChange={e =>
+                    setUser({ ...user, password: e.target.value })
+                  }
                 />
                 <div className="input-group-append">
                   <div className="input-group-text">
@@ -50,7 +95,7 @@ function Register() {
                 </div>
               </div>
 
-              {JSON.stringify(user)}
+              {/* {JSON.stringify(user)} */}
 
               <div className="row">
                 <div className="col-12">
@@ -59,9 +104,9 @@ function Register() {
                   </button>
                 </div>
               </div>
-              <div className="row" style={{marginTop : 10}}>
+              <div className="row" style={{ marginTop: 10 }}>
                 <div className="col-12">
-                  <button 
+                  <button
                     className="btn btn-default btn-block"
                     onClick={() => navigate("/login")}
                   >
@@ -77,7 +122,7 @@ function Register() {
       </div>
       {/* /.login-box */}
     </div>
-  )
+  );
 }
 
-export default Register
+export default Register;
