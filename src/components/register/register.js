@@ -16,7 +16,7 @@ function Register() {
 
     if (user.username !== "" && user.password !== "") {
       await axios
-        .post("http://localhost:1000/create", user)
+        .post("http://localhost:1000/register", user)
         .then((result) => {
           console.log(result.data);
           if(result.data.message === "User was already registered"){

@@ -1,16 +1,11 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../../App";
 import axios from "axios";
 import Swal from "sweetalert2";
 
 function Login() {
-  const { isLogin, setIsLogin } = useContext(Context);
-
-  const [account, setAccount] = useState({
-    username: "",
-    password: "",
-  });
+  const { setIsLogin, account, setAccount } = useContext(Context);
   
   const navigate = useNavigate();
 

@@ -12,9 +12,13 @@ const Context = createContext();
 
 function App() {
   const [isLogin, setIsLogin] = useState(null);
+  const [account, setAccount] = useState({
+    username: "",
+    password: "",
+  });
 
   return (
-    <Context.Provider value={{ isLogin, setIsLogin}}>
+    <Context.Provider value={{ isLogin, setIsLogin, account, setAccount}}>
       <BrowserRouter>
         {localStorage.getItem('alreadyLogin') && <Header/>}
         {localStorage.getItem('alreadyLogin') && <Menu/>}

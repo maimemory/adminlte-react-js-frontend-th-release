@@ -11,6 +11,7 @@ function Header() {
   const signOut = () => {
     setIsLogin(false);
     localStorage.removeItem('alreadyLogin');
+    localStorage.removeItem('currentUser');
     navigate("/");
   }
 

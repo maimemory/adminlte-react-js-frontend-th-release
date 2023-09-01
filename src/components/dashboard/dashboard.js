@@ -1,8 +1,87 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { Context } from "./../../App";
 
 function Dashboard() {
+
+  const { account } = useContext(Context);
+
+  const [memoList, setMemoList] = useState([]);
+  const [save, setSave] = useState(false);
+
+  if(localStorage.getItem('currentUser') === null){
+    localStorage.setItem('currentUser', account.username);
+  }
+  
+  useEffect(() => {
+    axios.post('http://localhost:1000/readmemo', {
+      username : localStorage.getItem('currentUser')
+    })
+    .then(result => {
+      console.log(result);
+      setMemoList(result.data)
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }, [save])
+
+  const showMemoList = memoList.map((item, index) => {
+
+    const deleteMemo = (id) => {
+
+      axios.post(`http://localhost:1000/deletememo/${item._id}`, {
+        username : localStorage.getItem('currentUser')
+      })
+      .then(result => {
+        console.log(result.data);
+        setMemoList(memoList.filter(item => {
+          return item._id != id;
+        }))
+      })
+    }
+
+    // const setMemoStatus = (id) => {
+
+    //   axios.post(`http://localhost:1000/updatememo/${item._id}`, {
+    //     username : localStorage.getItem('currentUser')
+    //   })
+    //   .then(result => {
+    //     console.log(result.data);
+    //     setMemoList(memoList.filter(item => {
+    //       if(item._id = id){
+    //         item.isDone = ~item.isDone;
+    //       }
+    //     }))
+    //   })
+    // }
+
+    return(
+      <tr key={item._id}>
+        <td>
+          <a>{item.memo}</a>
+          <br />
+          <small>{item.created}</small>
+        </td>
+        <td className="project-state">
+          {(item.isDone) ? 
+          <span className="badge badge-success" style={{padding: 10}}>Success</span> : 
+          <span className="badge badge-danger" style={{padding: 10}}>Incomplete</span>}
+        </td>
+        <td className="project-actions text-right">
+          <a className="btn btn-info btn-sm" href="#">
+            <i className="fas fa-pencil-alt"></i>
+            Edit
+          </a>
+          <a className="btn btn-danger btn-sm" onClick={() => deleteMemo(item._id)}>
+            <i className="fas fa-trash"></i>
+            Delete
+          </a>
+        </td>
+      </tr>
+    )
+  })
 
   const createMemo = () => {
     Swal.fire({
@@ -15,20 +94,31 @@ function Dashboard() {
       confirmButtonText: "Save",
       showLoaderOnConfirm: true,
       preConfirm: (inputText) => {
-        return fetch(`//api.github.com/users/${inputText}`)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(response.statusText);
-            }
-            return response.json();
-          })
-          .catch((error) => {
-            Swal.showValidationMessage(`Request failed: ${error}`);
-          });
+
+        const newMemo = {
+          memo: inputText,
+          isDone: false,
+          created: Date()
+        }
+
+        return axios.post(`http://localhost:1000/creatememo`,{
+          username : localStorage.getItem('currentUser'),
+          newMemo : inputText
+        })
+        .then(result => {
+          setMemoList([...memoList, newMemo]);
+          console.log(result);
+        })
+        .catch(err => {
+          console.log(err);
+          Swal.showValidationMessage(`Request failed: ${err}`);
+        });
       },
       allowOutsideClick: () => !Swal.isLoading(),
-    }).then((result) => {
+    }).then(result => {
+      console.log(result);
       if (result.isConfirmed) {
+        setSave(~save);
         Swal.fire(
           "Save Successfully!",
           "Redirect to Dashboard!",
@@ -59,26 +149,7 @@ function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>
-                    <a>AdminLTE v3</a>
-                    <br />
-                    <small>Created 01.01.2019</small>
-                  </td>
-                  <td className="project-state">
-                    <span className="badge badge-success">Success</span>
-                  </td>
-                  <td className="project-actions text-right">
-                    <a className="btn btn-info btn-sm" href="#">
-                      <i className="fas fa-pencil-alt"></i>
-                      Edit
-                    </a>
-                    <a className="btn btn-danger btn-sm" href="#">
-                      <i className="fas fa-trash"></i>
-                      Delete
-                    </a>
-                  </td>
-                </tr>
+                {showMemoList}
               </tbody>
             </table>
           </div>
