@@ -30,54 +30,104 @@ function Dashboard() {
   const showMemoList = memoList.map((item, index) => {
 
     const deleteMemo = (id) => {
-
       axios.post(`http://localhost:1000/deletememo/${item._id}`, {
         username : localStorage.getItem('currentUser')
       })
       .then(result => {
         console.log(result.data);
         setMemoList(memoList.filter(item => {
-          return item._id != id;
+          return item._id !== id;
         }))
       })
     }
 
-    // const setMemoStatus = (id) => {
+    const editMemo = (id) => {
+      Swal.fire({
+        title: "Edit Your Memo",
+        input: "text",
+        inputAttributes: {
+          autocapitalize: "off",
+        },
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        showLoaderOnConfirm: true,
+        preConfirm: (inputText) => {
+  
+          // const newMemo = {
+          //   memo: inputText,
+          //   isDone: false,
+          //   created: Date()
+          // }
+  
+          return axios.post(`http://localhost:1000/editmemo/${item._id}`,{
+            username : localStorage.getItem('currentUser'),
+            newMemo : inputText
+          })
+          .then(result => {
+            console.log(result.data);
+            // setMemoList(memoList.filter(item => {
+            //   if(item._id === id){
+            //     item.memo = newMemo;
+            //   }
+            //   return item;
+            // }))
+          })
+          .catch(err => {
+            console.log(err);
+            Swal.showValidationMessage(`Request failed: ${err}`);
+          });
+        },
+        allowOutsideClick: () => !Swal.isLoading(),
+      }).then(result => {
+        console.log(result);
+        if (result.isConfirmed) {
+          setSave(~save);
+          Swal.fire(
+            "Save Successfully!",
+            "Redirect to Dashboard!",
+            "success"
+          );
+        }
+      });
+    }
 
-    //   axios.post(`http://localhost:1000/updatememo/${item._id}`, {
-    //     username : localStorage.getItem('currentUser')
-    //   })
-    //   .then(result => {
-    //     console.log(result.data);
-    //     setMemoList(memoList.filter(item => {
-    //       if(item._id = id){
-    //         item.isDone = ~item.isDone;
-    //       }
-    //     }))
-    //   })
-    // }
+    const setMemoStatus = (id) => {
+      axios.post(`http://localhost:1000/updatememo/${item._id}`, {
+        username : localStorage.getItem('currentUser'),
+        oldIsDone : item.isDone
+      })
+      .then(result => {
+        console.log(result.data);
+        setMemoList(memoList.filter(item => {
+          if(item._id === id){
+            item.isDone === true ? item.isDone = false: item.isDone = true;
+          }
+          return item;
+        }))
+      })
+    }
 
     return(
       <tr key={item._id}>
         <td>
-          <a>{item.memo}</a>
+          <span>{item.memo}</span>
           <br />
           <small>{item.created}</small>
         </td>
-        <td className="project-state">
+        <td className="project-state" onClick={() => setMemoStatus(item._id)}>
           {(item.isDone) ? 
           <span className="badge badge-success" style={{padding: 10}}>Success</span> : 
           <span className="badge badge-danger" style={{padding: 10}}>Incomplete</span>}
         </td>
         <td className="project-actions text-right">
-          <a className="btn btn-info btn-sm" href="#">
+          <span className="btn btn-info btn-sm" onClick={() => editMemo(item._id)}>
             <i className="fas fa-pencil-alt"></i>
             Edit
-          </a>
-          <a className="btn btn-danger btn-sm" onClick={() => deleteMemo(item._id)}>
+          </span>
+          <span className="btn btn-danger btn-sm" onClick={() => deleteMemo(item._id)}>
             <i className="fas fa-trash"></i>
             Delete
-          </a>
+          </span>
         </td>
       </tr>
     )
@@ -95,18 +145,18 @@ function Dashboard() {
       showLoaderOnConfirm: true,
       preConfirm: (inputText) => {
 
-        const newMemo = {
-          memo: inputText,
-          isDone: false,
-          created: Date()
-        }
+        // const newMemo = {
+        //   memo: inputText,
+        //   isDone: false,
+        //   created: Date()
+        // }
 
         return axios.post(`http://localhost:1000/creatememo`,{
           username : localStorage.getItem('currentUser'),
           newMemo : inputText
         })
         .then(result => {
-          setMemoList([...memoList, newMemo]);
+          // setMemoList([...memoList, newMemo]);
           console.log(result);
         })
         .catch(err => {
