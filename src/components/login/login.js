@@ -6,6 +6,9 @@ import Swal from "sweetalert2";
 
 function Login() {
   const { setIsLogin, account, setAccount } = useContext(Context);
+
+  const regUrl = "/adminlte-react-js-frontend-th-release/register";
+  const dashUrl = "/adminlte-react-js-frontend-th-release/dashboard";
   
   const navigate = useNavigate();
 
@@ -36,7 +39,7 @@ function Login() {
             );
             setIsLogin(true);
             localStorage.setItem('alreadyLogin', true);
-            navigate("/dashboard");
+            navigate({dashUrl});
           }
         })
         .catch((err) => {
@@ -112,7 +115,7 @@ function Login() {
                 <div className="col-12">
                   <button
                     className="btn btn-default btn-block"
-                    onClick={() => navigate("/register")}
+                    onClick={() => navigate({regUrl})}
                   >
                     ลงทะเบียน
                   </button>
