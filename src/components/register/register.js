@@ -9,8 +9,6 @@ function Register() {
     password: "",
   });
 
-  const loginUrl = "/adminlte-react-js-frontend-th-release/login";
-
   const navigate = useNavigate();
 
   const createUser = async (e) => {
@@ -33,7 +31,7 @@ function Register() {
               "กำลังไปยังหน้า Dashboard!",
               "success"
             );
-            navigate({loginUrl});
+            navigate("/login");
           }
         })
         .catch((err) => {
@@ -109,7 +107,7 @@ function Register() {
                 <div className="col-12">
                   <button
                     className="btn btn-default btn-block"
-                    onClick={() => navigate({loginUrl})}
+                    onClick={() => navigate("/login")}
                   >
                     ยกเลิก
                   </button>

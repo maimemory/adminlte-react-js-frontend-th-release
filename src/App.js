@@ -17,21 +17,17 @@ function App() {
     password: "",
   });
 
-  const loginUrl = "/adminlte-react-js-frontend-th-release/login";
-  const regUrl = "/adminlte-react-js-frontend-th-release/register";
-  const dashUrl = "/adminlte-react-js-frontend-th-release/dashboard";
-
   return (
     <Context.Provider value={{ isLogin, setIsLogin, account, setAccount}}>
       <BrowserRouter>
         {localStorage.getItem('alreadyLogin') && <Header/>}
         {localStorage.getItem('alreadyLogin') && <Menu/>}
         <Routes>
-          <Route path={loginUrl} element={(localStorage.getItem('alreadyLogin')) ? <Navigate to={dashUrl}/> : <Login/>}/>
-          <Route path={regUrl} element={(localStorage.getItem('alreadyLogin')) ? <Navigate to={dashUrl}/> : <Register/>}/>
-          <Route path={dashUrl} element={(localStorage.getItem('alreadyLogin')) ? <Dashboard/> : <Navigate to={loginUrl}/>}/>
-          <Route exact={true} path="/" element={(localStorage.getItem('alreadyLogin')) ? <Navigate to={dashUrl}/> : <Navigate to={loginUrl} />}/>
-          <Route exact={true} path="*" element={<Navigate to={loginUrl} />}/>
+          <Route path="/login" element={(localStorage.getItem('alreadyLogin')) ? <Navigate to="/dashboard"/> : <Login/>}/>
+          <Route path="/register" element={(localStorage.getItem('alreadyLogin')) ? <Navigate to="/dashboard"/> : <Register/>}/>
+          <Route path="/dashboard" element={(localStorage.getItem('alreadyLogin')) ? <Dashboard/> : <Navigate to="/login"/>}/>
+          <Route exact={true} path="/" element={(localStorage.getItem('alreadyLogin')) ? <Navigate to="/dashboard"/> : <Navigate to="/login" />}/>
+          <Route exact={true} path="*" element={<Navigate to="/login" />}/>
         </Routes>
         <Footer/>
       </BrowserRouter>
