@@ -6,10 +6,14 @@ function Header() {
 
   const navigate = useNavigate();
 
-  const {isLogin, setIsLogin } = useContext(Context);
+  const {isLogin, setIsLogin, setAccount } = useContext(Context);
 
   const signOut = () => {
     setIsLogin(false);
+    setAccount({
+      username: "",
+      password: ""
+    })
     localStorage.removeItem('alreadyLogin');
     localStorage.removeItem('currentUser');
     navigate("/");
